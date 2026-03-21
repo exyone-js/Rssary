@@ -1,0 +1,86 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "首页";
+    Layout = "_Layout";
+}
+
+<div class="content-header">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h1 class="h4 mb-0">文章聚合</h1>
+        <div class="d-flex gap-2">
+            <a href="/feed" target="_blank" class="btn btn-outline-secondary btn-sm" title="RSS 订阅">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                </svg>
+                RSS
+            </a>
+            <a asp-page="/Submit" class="btn btn-primary btn-sm">提交博客</a>
+        </div>
+    </div>
+
+    <form method="get" class="mb-4">
+        <div class="input-group input-group-sm">
+            <input type="text" name="q" value="@Model.SearchQuery" class="form-control" placeholder="搜索文章标题、描述或博主名称...">
+            <button class="btn btn-outline-secondary" type="submit">搜索</button>
+            @if (!string.IsNullOrEmpty(Model.SearchQuery))
+            {
+                <a asp-page="/Index" class="btn btn-outline-danger">清除</a>
+            }
+        </div>
+    </form>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SearchQuery))
+{
+    <div class="alert alert-info mb-4 py-2">
+        搜索 "<strong>@Model.SearchQuery</strong>" 找到 @Model.Articles.Count 篇文章
+    </div>
+}
+
+@if (!Model.Articles.Any())
+{
+    <div class="text-center text-muted py-5">
+        @if (!string.IsNullOrEmpty(Model.SearchQuery))
+        {
+            <p>未找到匹配的文章。</p>
+            <a asp-page="/Index" class="btn btn-outline-primary btn-sm">查看全部文章</a>
+        }
+        else
+        {
+            <p>暂无文章，请先提交博客并等待审核。</p>
+            <a asp-page="/Submit" class="btn btn-outline-primary btn-sm">提交第一个博客</a>
+        }
+    </div>
+}
+else
+{
+    <div class="article-list">
+        @foreach (var article in Model.Articles)
+        {
+            var blog = Model.BlogMap.GetValueOrDefault(article.BlogId);
+            <div class="article-card">
+                <div class="article-title">
+                    <a href="@article.Link" target="_blank">@article.Title</a>
+                </div>
+                @if (!string.IsNullOrEmpty(article.Description))
+                {
+                    <div class="article-desc">@article.Description</div>
+                }
+                <div class="article-meta">
+                    <span>
+                        @if (blog != null)
+                        {
+                            <a asp-page="/Blog" asp-route-id="@blog.Id">@blog.Name</a>
+                        }
+                        @if (!string.IsNullOrEmpty(article.Author))
+                        {
+                            <span> · @article.Author</span>
+                        }
+                    </span>
+                    <span>@article.PublishedAt.ToString("yyyy-MM-dd HH:mm")</span>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,75 @@
+@page
+@model ReviewModel
+@{
+    ViewData["Title"] = "审核";
+}
+
+<div class="container mt-4">
+    @if (!Model.IsAuthenticated)
+    {
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">审核入口</h4>
+                        <form method="get">
+                            <div class="mb-3">
+                                <label class="form-label">审核密钥</label>
+                                <input type="password" name="key" class="form-control" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary">进入</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>待审核博客</h2>
+            <span class="text-muted">共 @Model.PendingBlogs.Count 个</span>
+        </div>
+
+        @if (!Model.PendingBlogs.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <p>暂无待审核博客</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var blog in Model.PendingBlogs)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">@blog.Name</h5>
+                        <p class="card-text">
+                            <strong>网址：</strong>
+                            <a href="@blog.Url" target="_blank">@blog.Url</a>
+                        </p>
+                        <p class="card-text">
+                            <strong>RSS：</strong>
+                            <a href="@blog.RssUrl" target="_blank">@blog.RssUrl</a>
+                        </p>
+                        @if (!string.IsNullOrEmpty(blog.Description))
+                        {
+                            <p class="card-text">
+                                <strong>简介：</strong>@blog.Description
+                            </p>
+                        }
+                        <p class="card-text">
+                            <small class="text-muted">提交时间：@blog.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                        </p>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="blogId" value="@blog.Id" />
+                            <input type="hidden" name="key" value="@Request.Query["key"]" />
+                            <button type="submit" asp-page-handler="Approve" class="btn btn-success btn-sm">通过</button>
+                            <button type="submit" asp-page-handler="Reject" class="btn btn-danger btn-sm">拒绝</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

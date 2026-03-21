@@ -1,0 +1,77 @@
+@using BlogSwarm.Services
+@inject DataService DataService
+
+@{
+    var topBlogs = DataService.GetTopBlogs(5);
+    var randomBlogs = DataService.GetRandomBlogs(3);
+    var recentArticles = DataService.GetRecentArticles(3);
+}
+
+<div class="sidebar-card">
+    <h5>🏆 博主排行榜</h5>
+    @if (topBlogs.Any())
+    {
+        @for (int i = 0; i < topBlogs.Count; i++)
+        {
+            var (blog, count) = topBlogs[i];
+            <div class="rank-item">
+                <span class="rank-num @(i < 3 ? "top3" : "")">@(i + 1)</span>
+                <a asp-page="/Blog" asp-route-id="@blog.Id" title="@blog.Name">@blog.Name</a>
+                <span class="count">@count 篇</span>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted" style="font-size: 13px;">暂无数据</p>
+    }
+</div>
+
+<div class="sidebar-card">
+    <h5>🎲 随机博主</h5>
+    @if (randomBlogs.Any())
+    {
+        @foreach (var blog in randomBlogs)
+        {
+            <div class="blog-item">
+                <a asp-page="/Blog" asp-route-id="@blog.Id">@blog.Name</a>
+                @if (!string.IsNullOrEmpty(blog.Description))
+                {
+                    <div class="desc">@blog.Description</div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted" style="font-size: 13px;">暂无数据</p>
+    }
+</div>
+
+<div class="sidebar-card">
+    <h5>📰 最新文章</h5>
+    @if (recentArticles.Any())
+    {
+        @foreach (var article in recentArticles)
+        {
+            <div class="article-item">
+                <a href="@article.Link" target="_blank" title="@article.Title">@article.Title</a>
+                <div class="meta">@article.PublishedAt.ToString("MM-dd HH:mm")</div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-muted" style="font-size: 13px;">暂无数据</p>
+    }
+</div>
+
+<div class="sidebar-card">
+    <h5>🔗 快捷链接</h5>
+    <ul class="link-list">
+        <li><a asp-page="/Submit">📝 提交博客</a></li>
+        <li><a href="/feed" target="_blank">📡 RSS 订阅</a></li>
+        <li><a href="/api/stats" target="_blank">📊 API 统计</a></li>
+        <li><a href="/api/blogs" target="_blank">📋 博客列表 API</a></li>
+    </ul>
+</div>
