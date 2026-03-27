@@ -1,6 +1,7 @@
 using Tomlyn;
 using Tomlyn.Model;
 using BlogSwarm.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BlogSwarm.Services;
 
@@ -10,30 +11,32 @@ public class DataService
     private readonly string _blogsDir;
     private readonly string _blogsPath;
     private readonly string _configPath;
-    private readonly object _lock = new();
+    private readonly object _fileLock = new();
     private readonly Random _random = new();
+    private readonly ICacheService _cache;
+    private readonly ILogger<DataService> _logger;
 
-    public DataService(IWebHostEnvironment env)
+    private const string CacheKeyBlogs = "blogs_all";
+    private const string CacheKeyApprovedBlogs = "blogs_approved";
+    private const string CacheKeyStats = "stats";
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(30);
+
+    public DataService(IWebHostEnvironment env, ICacheService cache, ILogger<DataService> logger)
     {
         _dataDir = Path.Combine(env.ContentRootPath, "Data");
         _blogsDir = Path.Combine(_dataDir, "Blogs");
         _blogsPath = Path.Combine(_dataDir, "blogs.toml");
         _configPath = Path.Combine(_dataDir, "config.toml");
+        _cache = cache;
+        _logger = logger;
         EnsureDataDir();
     }
 
     private void EnsureDataDir()
     {
-        if (!Directory.Exists(_dataDir))
-        {
-            Directory.CreateDirectory(_dataDir);
-        }
-
-        if (!Directory.Exists(_blogsDir))
-        {
-            Directory.CreateDirectory(_blogsDir);
-        }
-
+        Directory.CreateDirectory(_dataDir);
+        Directory.CreateDirectory(_blogsDir);
+        
         if (!File.Exists(_blogsPath))
         {
             File.WriteAllText(_blogsPath, "# BlogSwarm 博主列表\n");
@@ -42,9 +45,20 @@ public class DataService
 
     private string GetArticleFilePath(string blogId) => Path.Combine(_blogsDir, $"{blogId}.toml");
 
+    public void InvalidateCache()
+    {
+        _cache.Remove(CacheKeyBlogs);
+        _cache.Remove(CacheKeyApprovedBlogs);
+        _cache.Remove(CacheKeyStats);
+        _logger.LogDebug("Cache invalidated");
+    }
+
     public BlogSwarmConfig LoadBlogs()
     {
-        lock (_lock)
+        var cached = _cache.Get<BlogSwarmConfig>(CacheKeyBlogs);
+        if (cached != null) return cached;
+
+        lock (_fileLock)
         {
             if (!File.Exists(_blogsPath))
             {
@@ -79,13 +93,14 @@ public class DataService
                 }
             }
 
+            _cache.Set(CacheKeyBlogs, config, CacheDuration);
             return config;
         }
     }
 
     private void SaveBlogs(BlogSwarmConfig config)
     {
-        lock (_lock)
+        lock (_fileLock)
         {
             var sb = new System.Text.StringBuilder();
             sb.AppendLine("# BlogSwarm 博主列表");
@@ -108,11 +123,16 @@ public class DataService
             }
 
             File.WriteAllText(_blogsPath, sb.ToString());
+            InvalidateCache();
         }
     }
 
     private ArticleFileConfig LoadArticlesByBlogId(string blogId)
     {
+        var cacheKey = $"articles_{blogId}";
+        var cached = _cache.Get<ArticleFileConfig>(cacheKey);
+        if (cached != null) return cached;
+
         var filePath = GetArticleFilePath(blogId);
         var config = new ArticleFileConfig { BlogId = blogId };
 
@@ -121,7 +141,7 @@ public class DataService
             return config;
         }
 
-        lock (_lock)
+        lock (_fileLock)
         {
             var text = File.ReadAllText(filePath);
             var model = Toml.ToModel(text);
@@ -146,6 +166,7 @@ public class DataService
                 }
             }
 
+            _cache.Set(cacheKey, config, CacheDuration);
             return config;
         }
     }
@@ -154,7 +175,7 @@ public class DataService
     {
         var filePath = GetArticleFilePath(blogId);
 
-        lock (_lock)
+        lock (_fileLock)
         {
             var sb = new System.Text.StringBuilder();
             sb.AppendLine($"# 博客文章 - {blogId}");
@@ -176,6 +197,7 @@ public class DataService
             }
 
             File.WriteAllText(filePath, sb.ToString());
+            _cache.Remove($"articles_{blogId}");
         }
     }
 
@@ -246,7 +268,6 @@ public class DataService
 
         var result = new List<Article>();
         var blogIds = blogs.Select(b => b.Id).ToList();
-        var blogMap = blogs.ToDictionary(b => b.Id);
 
         lock (_random)
         {
@@ -300,7 +321,11 @@ public class DataService
 
     public string GetReviewKey()
     {
-        lock (_lock)
+        var cacheKey = "config_review_key";
+        var cached = _cache.Get<string>(cacheKey);
+        if (cached != null) return cached;
+
+        lock (_fileLock)
         {
             if (!File.Exists(_configPath))
             {
@@ -311,7 +336,9 @@ public class DataService
             {
                 var text = File.ReadAllText(_configPath);
                 var model = Toml.ToModel(text);
-                return GetString(model, "review_key", "review");
+                var key = GetString(model, "review_key", "review");
+                _cache.Set(cacheKey, key, CacheDuration);
+                return key;
             }
             catch
             {
@@ -357,6 +384,7 @@ public class DataService
         var existingConfig = LoadArticlesByBlogId(blogId);
         var existingLinks = existingConfig.Articles.Select(a => a.Link).ToHashSet();
 
+        var newCount = 0;
         foreach (var article in articles)
         {
             if (!existingLinks.Contains(article.Link))
@@ -371,21 +399,31 @@ public class DataService
                     FetchedAt = article.FetchedAt.ToString("O"),
                     Author = article.Author
                 });
+                newCount++;
             }
         }
 
-        SaveArticlesByBlogId(blogId, existingConfig.Articles);
+        if (newCount > 0)
+        {
+            SaveArticlesByBlogId(blogId, existingConfig.Articles);
+            _cache.Remove(CacheKeyStats);
+            _logger.LogDebug("Added {Count} new articles for blog {BlogId}", newCount, blogId);
+        }
     }
 
     public Blog? GetBlogById(string id)
     {
-        var blogs = GetBlogs();
-        return blogs.FirstOrDefault(b => b.Id == id);
+        return GetBlogs().FirstOrDefault(b => b.Id == id);
     }
 
     public List<Blog> GetApprovedBlogs()
     {
-        return GetBlogs().Where(b => b.Status == BlogStatus.Approved).ToList();
+        var cached = _cache.Get<List<Blog>>(CacheKeyApprovedBlogs);
+        if (cached != null) return cached;
+
+        var blogs = GetBlogs().Where(b => b.Status == BlogStatus.Approved).ToList();
+        _cache.Set(CacheKeyApprovedBlogs, blogs, CacheDuration);
+        return blogs;
     }
 
     public List<Blog> GetPendingBlogs()
@@ -558,11 +596,16 @@ public class DataService
 
     public (int BlogCount, int ArticleCount, DateTime? LastUpdate) GetStats()
     {
+        var cached = _cache.Get<(int, int, DateTime?)>(CacheKeyStats);
+        if (cached != default) return cached;
+
         var blogs = GetApprovedBlogs();
         var articles = GetArticles();
         var lastUpdate = articles.Any() ? articles.Max(a => a.FetchedAt) : (DateTime?)null;
 
-        return (blogs.Count, articles.Count, lastUpdate);
+        var stats = (blogs.Count, articles.Count, lastUpdate);
+        _cache.Set(CacheKeyStats, stats, CacheDuration);
+        return stats;
     }
 
     public (string Text, string Author)? GetRandomQuote()

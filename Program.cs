@@ -7,9 +7,19 @@ using BlogSwarm.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<RssService>();
 builder.Services.AddHostedService<FeedFetchService>();
+
+builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("ApiPolicy", builder => builder.Expire(TimeSpan.FromMinutes(10)));
+    options.AddPolicy("RssPolicy", builder => builder.Expire(TimeSpan.FromMinutes(30)));
+});
 
 var app = builder.Build();
 
@@ -18,9 +28,18 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000");
+    }
+});
+
 app.UseRouting();
 app.UseAuthorization();
+app.UseResponseCaching();
+app.UseOutputCache();
 
 app.MapRazorPages();
 
@@ -81,7 +100,7 @@ app.MapGet("/feed", (DataService dataService, HttpContext context) =>
 
     var result = Encoding.UTF8.GetString(memoryStream.ToArray());
     return Results.Text(result, "application/rss+xml", Encoding.UTF8);
-});
+}).CacheOutput(policy => policy.Expire(TimeSpan.FromMinutes(30)));
 
 app.MapGet("/api/blogs", (DataService dataService) =>
 {
@@ -94,7 +113,7 @@ app.MapGet("/api/blogs", (DataService dataService) =>
         b.RssUrl,
         b.Description
     }));
-});
+}).CacheOutput("ApiPolicy");
 
 app.MapGet("/api/blog/{id}", (string id, DataService dataService) =>
 {
@@ -114,7 +133,7 @@ app.MapGet("/api/blog/{id}", (string id, DataService dataService) =>
         blog.Description,
         ArticleCount = articleCount
     });
-});
+}).CacheOutput("ApiPolicy");
 
 app.MapGet("/api/blog/{id}/articles", (string id, DataService dataService, int page = 1, int pageSize = 20) =>
 {
@@ -144,7 +163,7 @@ app.MapGet("/api/blog/{id}/articles", (string id, DataService dataService, int p
         TotalCount = totalCount,
         TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
     });
-});
+}).CacheOutput("ApiPolicy");
 
 app.MapGet("/api/articles", (DataService dataService, int page = 1, int pageSize = 20) =>
 {
@@ -169,7 +188,7 @@ app.MapGet("/api/articles", (DataService dataService, int page = 1, int pageSize
         TotalCount = totalCount,
         TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
     });
-});
+}).CacheOutput("ApiPolicy");
 
 app.MapGet("/api/search", (string q, DataService dataService) =>
 {
@@ -197,7 +216,7 @@ app.MapGet("/api/search", (string q, DataService dataService) =>
             Blog = blogMap.TryGetValue(a.BlogId, out var blog) ? new { blog.Id, blog.Name } : null
         })
     });
-});
+}).CacheOutput(policy => policy.Expire(TimeSpan.FromMinutes(5)).SetVaryByQuery(new[] { "q" }));
 
 app.MapGet("/api/stats", (DataService dataService) =>
 {
@@ -210,6 +229,12 @@ app.MapGet("/api/stats", (DataService dataService) =>
         ArticleCount = articles.Count,
         LastUpdated = articles.Any() ? articles.Max(a => a.FetchedAt) : (DateTime?)null
     });
-});
+}).CacheOutput("ApiPolicy");
+
+app.MapGet("/api/health", () => Results.Ok(new
+{
+    Status = "Healthy",
+    Timestamp = DateTime.UtcNow
+})).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)));
 
 app.Run();
