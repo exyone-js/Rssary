@@ -1,0 +1,62 @@
+# BlogSwarm 每日一言配置
+# 可随时编辑，保存后刷新页面即可生效
+
+[[quotes]]
+text = "代码写得好，Bug 少不了。"
+author = "程序员定律"
+
+[[quotes]]
+text = "调试比编写代码难两倍，所以如果你写代码时用尽了聪明才智，从定义上讲，你就没有足够的智慧去调试它。"
+author = "Brian Kernighan"
+
+[[quotes]]
+text = "先让它工作，再让它正确，最后让它快。"
+author = "Kent Beck"
+
+[[quotes]]
+text = "简单是可靠的先决条件。"
+author = "Edsger W. Dijkstra"
+
+[[quotes]]
+text = "程序必须是为了给人看而写，给机器执行只是附带的。"
+author = "Donald Knuth"
+
+[[quotes]]
+text = "好的代码本身就是最好的文档。"
+author = "Steve McConnell"
+
+[[quotes]]
+text = "任何傻瓜都能写出计算机能理解的代码，优秀的程序员写的是人能理解的代码。"
+author = "Martin Fowler"
+
+[[quotes]]
+text = "代码是写给别人看的，顺便能在机器上运行。"
+author = "佚名"
+
+[[quotes]]
+text = "不要重复自己 (DRY)。"
+author = "Andy Hunt"
+
+[[quotes]]
+text = "过早的优化是万恶之源。"
+author = "Donald Knuth"
+
+[[quotes]]
+text = "程序员的三大谎言：这段代码不用测试、这个 Bug 很好修、明天就能上线。"
+author = "互联网"
+
+[[quotes]]
+text = "在软件中，没有比复制粘贴更危险的行为了。"
+author = "佚名"
+
+[[quotes]]
+text = "代码质量决定心情，心情决定代码质量。"
+author = "程序员日常"
+
+[[quotes]]
+text = "没有银弹。"
+author = "Fred Brooks"
+
+[[quotes]]
+text = "抽象泄漏定律：所有非平凡的抽象，在某种程度上都有泄漏。"
+author = "Joel Spolsky"

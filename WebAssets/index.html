@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rssary</title>
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/site.css" rel="stylesheet">
+    <div id="head-injection"></div>
+</head>
+<body>
+    <div id="body-start-injection"></div>
+
+    <div id="app">
+        <!-- Top Navigation -->
+        <nav class="navbar-app">
+            <div class="navbar-inner">
+                <a class="navbar-brand" href="#/">
+                    <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                    </svg>
+                    <span class="navbar-brand-text">Rssary</span>
+                </a>
+                <div class="navbar-links">
+                    <a class="nav-link-app" href="#/">首页</a>
+                    <a class="nav-link-app" href="#/submit">提交</a>
+                    <a class="nav-link-app" href="#/review">管理</a>
+                    <a class="nav-link-app" href="/api" target="_blank">API</a>
+                    <a class="nav-link-app" href="/feed" target="_blank" title="RSS">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4a6 6 0 0 1 6 6 1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 7a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="body-app">
+            <aside class="sidebar">
+                <!-- Random Bloggers -->
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h6>随机博主</h6>
+                        <button class="refresh-btn" @click="refreshRandom" title="刷新">↻</button>
+                    </div>
+                    <ul class="sidebar-list">
+                        <li v-for="blog in randomBlogs" :key="blog.id">
+                            <router-link class="sidebar-link" :to="'/blog/' + blog.id">
+                                <span class="sidebar-avatar">{{ blog.name[0] }}</span>
+                                <span class="sidebar-name">{{ blog.name }}</span>
+                            </router-link>
+                        </li>
+                        <li v-if="randomBlogs.length === 0 && !loading" class="sidebar-empty">
+                            暂无博主
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Daily Quote -->
+                <div class="sidebar-section quote-section" v-if="quote.text">
+                    <div class="quote-text">“{{ quote.text }}”</div>
+                    <div class="quote-author" v-if="quote.author">— {{ quote.author }}</div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="sidebar-section">
+                    <h6 class="sidebar-title">导航</h6>
+                    <ul class="sidebar-list">
+                        <li><router-link class="sidebar-link" to="/submit">提交博客</router-link></li>
+                        <li><router-link class="sidebar-link" to="/review">管理后台</router-link></li>
+                    </ul>
+                </div>
+            </aside>
+
+            <main class="main-app">
+                <router-view></router-view>
+            </main>
+        </div>
+    </div>
+
+    <div id="body-end-injection"></div>
+
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/vue-router@4"></script>
+    <script src="/js/vue-app.js"></script>
+</body>
+</html>
