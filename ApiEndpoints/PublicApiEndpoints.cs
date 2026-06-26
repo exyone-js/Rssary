@@ -40,11 +40,26 @@ public static class PublicApiEndpoints
             return Results.Ok(new
             {
                 Title = config.GetSiteTitle() ?? "Rssary",
-                Description = config.GetSiteDescription() ?? "去中心化 RSS/Feed 整合平台",
+                Description = config.GetSiteDescription() ?? "RSS/Feed Aggregator",
                 BlogCount = stats.BlogCount,
                 ArticleCount = stats.ArticleCount,
                 LastUpdated = stats.LastUpdate
             });
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)));
+
+        // ===== i18n 翻译 =====
+        app.MapGet("/api/i18n", (I18NStore i18n, string? lang) =>
+        {
+            if (!string.IsNullOrEmpty(lang))
+                return Results.Ok(i18n.GetLanguage(lang));
+
+            return Results.Ok(i18n.GetAll());
+        }).CacheOutput("ApiPolicy");
+
+        // ===== i18n 可用语言列表 =====
+        app.MapGet("/api/i18n/languages", (I18NStore i18n) =>
+        {
+            return Results.Ok(i18n.GetAvailableLanguages());
         }).CacheOutput("ApiPolicy");
     }
 }

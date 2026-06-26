@@ -1,0 +1,162 @@
+# 博客文章 - exyone
+
+[[articles]]
+id = "86b6fc1490744545b95f00feb3d668da"
+title = "从 exyone.me 到 exyon.ee：关于我选择域名的心路历程"
+link = "https://exyone.us.kg/archives/my-domain-change-story-exyone-to-exyon"
+description = "1. 第一次，我在阿里云捡了个“便宜” 第一次买域名时，我没多想。恰好赶上阿里云首年优惠，1元拿下 exyone.me。 那时觉得：一个属于自己的网站，续费贵店算什么？ 用了小半年，烦恼来了——续费时才发现，年费折合人民币要一百多块。 对当时每月生活费刚够吃饭的我来说，这差不多是一周的生活费。 我犹"
+published_at = "2026-05-21T14:13:13.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6308523Z"
+
+[[articles]]
+id = "70918e10037147bf983dff1c3916376b"
+title = "折腾Docker和面板之后，我决定不折腾了"
+link = "https://exyone.us.kg/archives/i-stopped-tweaking-docker-and-panels"
+description = "最近为了更省心地部署一些软件，我重新拾起了Docker，顺便装了一个叫DPanel的面板来管理容器，和一直在用的aaPanel搭配着用。本以为能一劳永逸，结果走了一圈，发现大部分服务还是老老实实地跑在裸机上。 理想很丰满：全上Docker 一开始我的想法挺大的：把大部分服务都迁到Docker里，比如"
+published_at = "2026-05-21T13:11:08.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310228Z"
+
+[[articles]]
+id = "b7f38d31c612484e9e1921a8672a807f"
+title = "给非程序员的 AI 编程进阶教程：一套最适合新手的“万能工具箱”"
+link = "https://exyone.us.kg/archives/ai-coding-for-non-techies-starter-toolkit"
+description = "在上一篇里，我们聊了怎么打开命令行、怎么用配置文件来管理可变参数、怎么用版本控制来保护自己的代码。那些是入门基础概念，目标是让你跑起来、不踩坑。 而这一篇是进阶的“菜谱”。我们不谈宽泛的选择，只给你一套足够硬核、能伴你走遍中小项目和桌面开发的组合拳套装。这套搭配绝非胡乱搭配的决定，而是我自己尝试多年"
+published_at = "2026-05-05T03:48:39.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310352Z"
+
+[[articles]]
+id = "1258e22610f74608ae9c79141c0c1c6b"
+title = "给非程序员的 AI 编程启蒙：从命令行到“自然语言开发”"
+link = "https://exyone.us.kg/archives/ai-coding-101-cli-to-prompt-engineering"
+description = "事情的起因是我一位完全不懂代码的朋友咨询我：\"现在 AI 这么发达了，我也想用 AI 开发一款软件。\"我翻了翻网上的教程，发现它们往往两极分化：要么浅尝辄止，只会说\"你就问呗\"；要么一上来就抛出一堆术语，直接把新手劝退。 这篇文章，我会用最通俗的语言，带你走完从\"打开电脑\"到\"跑起程序\"的全过程。我"
+published_at = "2026-05-04T13:08:55.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310460Z"
+
+[[articles]]
+id = "f7bd27b4e58f4249931c52a02ecf1172"
+title = "折腾笔记：从 Misskey 到 Rhex，再到 Discourse，最后我放弃了……但我又回来了"
+link = "https://exyone.us.kg/archives/my-social-platform-journey-misskey-rhex-discourse"
+description = "最近手头有一台配置不算高的 VPS，2G 内存。想着既然闲置也是闲置，不如搭个属于自己的社交平台或者论坛。初衷很简单：能发帖、能互动、别太占资源。结果这一折腾，就是半个多月，中间几度想摔键盘。 故事是从 Misskey 开始的。那种类似微博的卡片式交互，还有联邦宇宙（Fediverse）的概念，看介"
+published_at = "2026-05-02T06:19:03.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310633Z"
+
+[[articles]]
+id = "7f8a527045114943bdd518438e7c90f7"
+title = "CSS 实现正文段落首行缩进的最佳实践"
+link = "https://exyone.us.kg/archives/best-practice-css-text-indent-first-line"
+description = "代码间的呼吸感：关于正文段落首行缩进的一次美学修正 更新 - 由于显示 Bug 较多，目前本站已放弃正文段落首行缩进 在搭建这个自托管的数字书房时，我始终觉得，文字的呈现方式本身就是内容的一部分。最近在微调博客样式时，我花了不少时间去雕琢一个看似微不足道，实则关乎阅读气质的细节——中文正文的首行缩进"
+published_at = "2026-05-02T06:00:25.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310723Z"
+
+[[articles]]
+id = "429f482d6dfc4f558535570e429b7e88"
+title = "酷鸭数据评测：高性价比的亚太云服务器"
+link = "https://exyone.us.kg/archives/kooya-data-budget-cloud-vps-asia-pacific-review"
+description = "最近趁着空闲时间在给几个小项目找合适的云服务器，机缘巧合之下发现了酷鸭数据（Kooya）这个平台，用下来感觉还不错，特别是对于有海外节点需求又看重性价比的朋友来说，值得拿出来唠一唠。他们的官网是 https://www.kooya.hk，整体界面做了中文适配，国内用户用起来没什么门槛。这家的老板是印"
+published_at = "2026-04-30T13:33:03.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310825Z"
+
+[[articles]]
+id = "6cbb0b2b9e594617bfb00528efb10e00"
+title = "数据库丢失危机与内网穿透节点失联，改进 Cloudflare Worker 反向代理报错页面"
+link = "https://exyone.us.kg/archives/db-crash-tunnel-down-custom-cloudflare-worker-error-page"
+description = "当我将博客从传统的云服务器迁回家里的自托管环境时，便知这场关于「控制欲」的实验注定不会平静。果不其然，频繁的配置变更与环境重构，让这台机器接连上演了几出令人心跳骤停的「惊魂记」。 数据库的至暗时刻 最先亮起红灯的是数据库。昨天晚上我正于宝塔面板中调试新的软件，指尖一滑，竟触发了不可逆的库删除操作。万"
+published_at = "2026-04-04T04:49:35.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6310924Z"
+
+[[articles]]
+id = "78236b8c160f4b6b851e7df2c3bd1925"
+title = "Copilot使用协议变更：AI时代开源代码何去何从？"
+link = "https://exyone.us.kg/archives/copilot-license-change-impact-on-open-source-code"
+description = "近日，GitHub宣布更新Copilot隐私政策：从2026年4月24日起，将默认使用Copilot Free、Pro和Pro+用户的交互数据（包括输入提示、输出建议、代码片段及相关上下文）来训练和改进AI模型。除非用户主动在设置中opt-out（关闭“允许GitHub使用我的数据进行AI模型训练”"
+published_at = "2026-03-28T05:12:37.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311035Z"
+
+[[articles]]
+id = "b9d354de90f24faba046dd0b36462278"
+title = "必应粉丝群客服问答，“开往”社区恶意 DDoS 攻击"
+link = "https://exyone.us.kg/archives/trouble-with-viafang-community-ddos-incident"
+description = "必应中国新开通了官方 QQ 粉丝群。这个社群原本是为了搭建站长与平台之间更直接、高效的沟通桥梁，用于收集站长诉求、解决实际问题，但实际进群后，诸多核心问题反馈后长期无人有效回应，客服响应滞后、处理消极的情况突出；与此同时，“开往”社区存在恶意DDoS攻击行为，两者虽无直接关联，但均对站长群体的合法权"
+published_at = "2026-03-26T04:48:25.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311121Z"
+
+[[articles]]
+id = "57cbc79fc76648e99f50c157021b8756"
+title = "小米兰亭：或许比更纱黑体更适合博客正文"
+link = "https://exyone.us.kg/archives/mi-sans-vs-sarasa-sans-blog-body-font"
+description = "最近调整博客字体，发现小米兰亭在正文阅读上，可能比更纱黑体更适合一些。 更纱黑体是我之前一直在用的字体——它融合了思源黑体和Iosevka，现代感强，字符也全。但阅读的体验感始终感觉没有系统默认字体一样好。直到换到小米兰亭，对比才明显：小米兰亭的字母更粗、更圆润，整体观感更舒适，长时间阅读不容易累。"
+published_at = "2026-03-25T11:09:00.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311200Z"
+
+[[articles]]
+id = "587772211696443b87c63fcd490ebb4e"
+title = "用代码证明 ASP.NET Core 从未“没落”：BlogSwarm 上线与 Mirage 图床开发手记"
+link = "https://exyone.us.kg/archives/aspnet-core-blogswarm-mirage-image-hosting-dev-log"
+description = "竟然有人说 ASP.NET 没落了？作为一个 C# 死忠党，我必须用代码和项目来证明：ASP.NET Core 依然是开发体验里的 YYDS。 最近我基于现代 .NET 做了两个实践项目，一个是已经上线的博客聚合平台，另一个是正在开发的开源图床。我想用它们告诉大家：在 2026 年，全栈 .NET"
+published_at = "2026-03-21T15:50:07.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311296Z"
+
+[[articles]]
+id = "f7b0158264284cadb453300cdc208aa4"
+title = "我为什么会因为官网设计直接放弃一个开源项目"
+link = "https://exyone.us.kg/archives/why-i-skip-open-source-projects-bad-website-design"
+description = "最近在研究 AI Agent，先后搜了 OpenClaw 和 AstrBot，结果两个项目的官网给我带来了完全相反的体验。 先说 OpenClaw（https://openclaw.ai）： 首页极其简洁，一眼就能看到核心卖点 有醒目的一键安装脚本（curl 命令直接复制粘贴） 即使页面上有少量谷歌"
+published_at = "2026-03-21T03:02:39.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311381Z"
+
+[[articles]]
+id = "5a3951e35a5049b699267ebdfc588e8d"
+title = "B站上传慢到崩溃？试试这个官方“后门”"
+link = "https://exyone.us.kg/archives/bilibili-upload-slow-fix-official-hidden-method"
+description = "又要对着B站生气了。虽然大家都戏称它是“噼里啪啦”，但看这架势，它大概只会变质，很难倒闭。毕竟还有那么多人在守护陈睿，而我曾经也是其中之一。 去年它的服务器就不太稳，动不动全线飘红，视频加载不出来。今年更是给了我当头一棒：仅仅因为在投稿时不小心露出了一行域名，账号就被直接永久封禁。这种一刀切的处罚力"
+published_at = "2026-03-14T15:03:12.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311500Z"
+
+[[articles]]
+id = "add9a4068d284e3e883328c12ff8a4fd"
+title = "又双叒叕作死：iPhone SE 3 换屏失败，螺丝满地跑，用胶带硬粘回去"
+link = "https://exyone.us.kg/archives/my-iphone-se3-repair-disaster-duct-tape-fix"
+description = "这台已经松松垮垮、破破烂烂的 iPhone SE 3，在我手里真是受尽了罪。 本来就因为之前自己瞎拆，早就面目全非了，今天我还嫌它不够惨，非要“自作聪明”——换个屏幕。 结果呢？标题已经剧透了：螺丝撒了一地。 我他妈真是闲得慌啊！ 好好的还能凑合用，非要作死换屏。现在好了，彻底玩脱：主板全靠透明胶带"
+published_at = "2026-03-11T14:22:00.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311606Z"
+
+[[articles]]
+id = "9fae45f9a059416795d3a07bad7fa3e0"
+title = "谈谈千字网CDN的设计理念"
+link = "https://exyone.us.kg/archives/qianzi-cdn-design-philosophy"
+description = "正如我在本站理念里写的那样 本站理念 我们围绕四个核心原则构建字体服务：取大不取小，取简不取繁；化大为小，化简为繁。下面详细解释每个理念如何落地，并通过具体例子让你一目了然。"
+published_at = "2026-02-25T16:14:03.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311679Z"
+
+[[articles]]
+id = "a22718a96a4a4eaa809e1f515bce8356"
+title = "千字网CDN：收集了1000个免费开源字体的CDN"
+link = "https://exyone.us.kg/archives/qianzi-cdn-free-open-source-fonts-cdn-1000"
+description = "访问链接：https://hanzi.bluu.pl/"
+published_at = "2026-02-15T10:39:00.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311806Z"
+
+[[articles]]
+id = "51ee112335164a12a95e2247a8205fac"
+title = "我和Manjaro：三次滚挂，重装时依旧选择它"
+link = "https://exyone.us.kg/archives/three-times-falled-still-choose-manjaro"
+description = "唉，今天一更新，Manjaro 又滚挂了…… 可每次挑 Linux 发行版的时候，来回犹豫，最后装的还是它。 讨厌 Arch 的折腾，却又离不开 AUR 的丰富——Manjaro 好像就成了那个折中的答案。 但……每次更新，Manjaro 官方那些 Pacman 包，似乎总会和 Arch 独有的 A"
+published_at = "2026-01-31T10:28:08.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311891Z"
+
+[[articles]]
+id = "d6609058e5fa4dafa49828d99657d796"
+title = "友站链接恢复了，顺便说说Halo降级/插件的经验"
+link = "https://exyone.us.kg/archives/friend-link-restored-and-halo-downgrade-plugin-notes"
+description = "前阵子把博客迁回家里服务器，用jar包直接跑的Halo，结果踩了个挺隐蔽的坑。 官方提供的arm64架构jar包版本偏旧（当时最新的稳定版还没跟上），导致好几个插件出现兼容性问题，尤其是“链接管理”这个最核心的友链插件直接挂了。 折腾了好一阵，现在友站链接终于全部恢复，可以正常访问啦～🌿 顺便郑重"
+published_at = "2026-01-17T07:13:00.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6311973Z"
+
+[[articles]]
+id = "a8a24b7d1fe2417aaed5a9460c03ad13"
+title = "谈谈为什么我这么依赖AI改写"
+link = "https://exyone.us.kg/archives/why-i-rely-on-ai-rewriting-tools"
+description = "这篇文章没有用到AI大模型二次改写 说实话，我是从小写东西就心里没把握的；写出来的东西，我自己看着别扭，虽然别人看可能感觉不出来什么 自从有了AI之后，我就有了写东西的底气——就算我看着难受，还有AI帮我改写 我一直有用文字记录些东西的想法，以前不敢写，现在有了AI之后就大胆放心地写 嗯…就算有时候"
+published_at = "2026-01-03T09:16:00.0000000Z"
+fetched_at = "2026-06-17T14:14:23.6312043Z"
+

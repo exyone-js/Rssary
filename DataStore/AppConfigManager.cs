@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Tomlyn;
 
 namespace Rssary.DataStore;
@@ -11,9 +13,10 @@ public class AppConfigManager
     private readonly object _fileLock = new();
     private readonly ILogger<AppConfigManager> _logger;
 
-    private const string DefaultReviewKey = "B10gSw4rm_Exy0nE091710";
+    private const string DefaultReviewKeyHash = "";
     private const string DefaultSiteTitle = "Rssary";
-    private const string DefaultSiteDescription = "RSS/Feed 聚合平台";
+    private const string DefaultSiteDescription = "RSS/Feed Aggregator";
+    private const string DefaultSiteLanguage = "en-US";
 
     public AppConfigManager(string configPath, ILogger<AppConfigManager> logger)
     {
@@ -65,21 +68,67 @@ public class AppConfigManager
 
     // ===== 读取方法 =====
 
-    public string GetReviewKey() => TomlHelper.GetString(ReadTable(), "review_key", DefaultReviewKey);
+    public string GetReviewKeyHash()
+    {
+        var table = ReadTable();
+        var hash = TomlHelper.GetString(table, "review_key_hash", DefaultReviewKeyHash);
+        
+        // 向后兼容：自动迁移旧版 review_key 到 review_key_hash
+        if (string.IsNullOrEmpty(hash))
+        {
+            var oldKey = TomlHelper.GetStringOrNull(table, "review_key");
+            if (!string.IsNullOrEmpty(oldKey))
+            {
+                hash = HashKey(oldKey);
+                // 写入新格式并移除旧格式
+                WriteTable(t =>
+                {
+                    t["review_key_hash"] = hash;
+                    t.Remove("review_key");
+                });
+            }
+        }
+        
+        return hash;
+    }
     public string GetSiteTitle() => TomlHelper.GetString(ReadTable(), "site_title", DefaultSiteTitle);
     public string GetSiteDescription() => TomlHelper.GetString(ReadTable(), "site_description", DefaultSiteDescription);
+    public string GetSiteLanguage() => TomlHelper.GetString(ReadTable(), "site_language", DefaultSiteLanguage);
     public string GetHeadInjection() => TomlHelper.GetStringOrNull(ReadTable(), "head_injection") ?? "";
     public string GetBodyStartInjection() => TomlHelper.GetStringOrNull(ReadTable(), "body_start_injection") ?? "";
     public string GetBodyEndInjection() => TomlHelper.GetStringOrNull(ReadTable(), "body_end_injection") ?? "";
 
+    /// <summary>
+    /// 校验管理密钥是否匹配
+    /// </summary>
+    public bool ValidateReviewKey(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return false;
+        var hash = HashKey(input);
+        return hash == GetReviewKeyHash();
+    }
+
     // ===== 写入方法 =====
 
+    /// <summary>
+    /// 设置管理密钥（存储 SHA256 哈希，不通文明文存储）
+    /// </summary>
     public void SetReviewKey(string key)
     {
         if (string.IsNullOrWhiteSpace(key) || key.Length < 6)
             throw new ArgumentException("审核密钥至少需要6位");
-        WriteTable(t => t["review_key"] = key);
-        _logger.LogInformation("Review key updated");
+
+        // 跳过哈希存储已有哈希值的情况（用于初始化时直接写已有哈希）
+        // 正常情况下应该是明文密钥
+        var isAlreadyHashed = key.Length == 64 && key.All(c => char.IsAsciiHexDigit(c));
+        var value = isAlreadyHashed ? key : HashKey(key);
+
+        WriteTable(t =>
+        {
+            t.Remove("review_key"); // 移除旧明文 key（如果存在）
+            t["review_key_hash"] = value;
+        });
+        _logger.LogInformation("Review key hash updated");
     }
 
     public void SetSiteTitle(string title)
@@ -90,6 +139,13 @@ public class AppConfigManager
     public void SetSiteDescription(string desc)
     {
         WriteTable(t => t["site_description"] = desc ?? DefaultSiteDescription);
+    }
+
+    public void SetSiteLanguage(string lang)
+    {
+        if (string.IsNullOrWhiteSpace(lang))
+            throw new ArgumentException("语言不能为空");
+        WriteTable(t => t["site_language"] = lang);
     }
 
     public void SetHeadInjection(string html)
@@ -132,9 +188,10 @@ public class AppConfigManager
         var table = ReadTable();
         return new
         {
-            ReviewKey = TomlHelper.GetString(table, "review_key", DefaultReviewKey),
+            ReviewKeyHash = TomlHelper.GetString(table, "review_key_hash", DefaultReviewKeyHash),
             SiteTitle = TomlHelper.GetString(table, "site_title", DefaultSiteTitle),
-            SiteDescription = TomlHelper.GetString(table, "site_description", DefaultSiteDescription)
+            SiteDescription = TomlHelper.GetString(table, "site_description", DefaultSiteDescription),
+            SiteLanguage = TomlHelper.GetString(table, "site_language", DefaultSiteLanguage)
         };
     }
 
@@ -148,9 +205,18 @@ public class AppConfigManager
         {
             SiteTitle = TomlHelper.GetString(table, "site_title", DefaultSiteTitle),
             SiteDescription = TomlHelper.GetString(table, "site_description", DefaultSiteDescription),
+            SiteLanguage = TomlHelper.GetString(table, "site_language", DefaultSiteLanguage),
             HeadInjection = TomlHelper.GetStringOrNull(table, "head_injection") ?? "",
             BodyStartInjection = TomlHelper.GetStringOrNull(table, "body_start_injection") ?? "",
             BodyEndInjection = TomlHelper.GetStringOrNull(table, "body_end_injection") ?? ""
         };
+    }
+
+    // ===== 哈希工具 =====
+
+    private static string HashKey(string key)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(key));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 }

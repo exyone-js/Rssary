@@ -11,7 +11,7 @@ namespace Rssary.DataStore;
 /// </summary>
 public class ArticleStore
 {
-    private readonly string _blogsDir;
+    private readonly string _articlesDir;
     private readonly object _fileLock = new();
     private readonly ICache _cache;
     private readonly ILogger<ArticleStore> _logger;
@@ -20,14 +20,14 @@ public class ArticleStore
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan IndexCacheDuration = TimeSpan.FromMinutes(10);
 
-    public ArticleStore(string blogsDir, ICache cache, ILogger<ArticleStore> logger)
+    public ArticleStore(string articlesDir, ICache cache, ILogger<ArticleStore> logger)
     {
-        _blogsDir = blogsDir;
+        _articlesDir = articlesDir;
         _cache = cache;
         _logger = logger;
     }
 
-    private string GetFilePath(string blogId) => Path.Combine(_blogsDir, $"{blogId}.toml");
+    private string GetFilePath(string blogId) => Path.Combine(_articlesDir, $"{blogId}.toml");
 
     // ===== 单博客读取 =====
 

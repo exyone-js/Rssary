@@ -32,7 +32,7 @@ public static class BlogEndpoints
                 blog.Id, blog.Name, blog.Url, blog.RssUrl,
                 blog.Description, ArticleCount = articleCount
             });
-        }).CacheOutput("ApiPolicy");
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(15)));
 
         // 博客文章列表
         app.MapGet("/api/blog/{id}/articles", (string id, BlogStore blogs, ArticleStore articles,
@@ -57,7 +57,7 @@ public static class BlogEndpoints
                 TotalCount = total,
                 TotalPages = (int)Math.Ceiling(total / (double)pageSize)
             });
-        }).CacheOutput("ApiPolicy");
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(15)));
 
         // 检查ID可用性
         app.MapGet("/api/check-id/{id}", (string id, BlogStore blogs) =>

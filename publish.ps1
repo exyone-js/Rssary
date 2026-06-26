@@ -2,13 +2,15 @@
 .SYNOPSIS
     Rssary AOT 跨平台打包脚本
 .DESCRIPTION
-    自动对 Windows (x64/ARM64) 和 Linux (x64/ARM64) 进行 AOT 编译打包。
-    在非目标平台上编译时需确保已安装对应的目标运行时 SDK。
+    自动对当前平台支持的架构进行 AOT 编译打包。
+    注意: .NET Native AOT 不支持跨 OS 编译。
+      - Windows 上只能打 win-x64 / win-arm64
+      - Linux   上只能打 linux-x64 / linux-arm64
 
     示例用法:
-        .\publish.ps1               # 打包所有平台
-        .\publish.ps1 -Platform win  # 仅打包 Windows
-        .\publish.ps1 -Platform linux -Clean
+        .\publish.ps1               # 打包当前平台所有架构
+        .\publish.ps1 -Platform win # 仅打包 Windows 目标
+        .\publish.ps1 -Clean        # 清理旧输出后打包
 #>
 
 param(
@@ -21,23 +23,43 @@ $root = Split-Path -Parent $PSCommandPath
 $proj = Join-Path $root 'Rssary.csproj'
 $out  = Join-Path $root 'publish'
 
-$configurations = @(
-    @{ Rid = 'win-x64';   Platform = 'win';   Name = 'Windows x64'   },
-    @{ Rid = 'win-arm64'; Platform = 'win';   Name = 'Windows ARM64' },
+# 检测当前 OS
+$currentIsWindows = [System.Environment]::OSVersion.Platform -eq 'Win32NT'
+$currentIsLinux   = -not $currentIsWindows
+
+# 根据当前 OS 过滤可用的目标
+$allConfigs = @(
+    @{ Rid = 'win-x64';     Platform = 'win';   Name = 'Windows x64'   },
+    @{ Rid = 'win-arm64';   Platform = 'win';   Name = 'Windows ARM64' },
     @{ Rid = 'linux-x64';   Platform = 'linux'; Name = 'Linux x64'     },
     @{ Rid = 'linux-arm64'; Platform = 'linux'; Name = 'Linux ARM64'   }
 )
 
+# 过滤: 跨 OS 目标不可用
+$configurations = $allConfigs | Where-Object {
+    if ($Platform -ne 'all' -and $_.Platform -ne $Platform) { return $false }
+    if ($currentIsWindows -and $_.Platform -eq 'linux') {
+        Write-Host "  ⚠ [$($_.Name)] 跳过 — .NET AOT 不支持在 Windows 上编译 Linux 目标。请在 Linux 上运行此脚本。" -ForegroundColor Yellow
+        return $false
+    }
+    if ($currentIsLinux -and $_.Platform -eq 'win') {
+        Write-Host "  ⚠ [$($_.Name)] 跳过 — .NET AOT 不支持在 Linux 上编译 Windows 目标。请在 Windows 上运行此脚本。" -ForegroundColor Yellow
+        return $false
+    }
+    return $true
+}
+
+if ($configurations.Count -eq 0) {
+    Write-Host "当前平台没有可打包的 AOT 目标。" -ForegroundColor Red
+    exit 1
+}
+
 if ($Clean -and (Test-Path $out)) {
-    Write-Host "🧹 清理输出目录: $out" -ForegroundColor Yellow
+    Write-Host "清理输出目录: $out" -ForegroundColor Yellow
     Remove-Item -Recurse -Force $out
 }
 
 foreach ($cfg in $configurations) {
-    if ($Platform -ne 'all' -and $cfg.Platform -ne $Platform) {
-        continue
-    }
-
     $rid = $cfg.Rid
     $outputDir = Join-Path $out $rid
     $label = $cfg.Name

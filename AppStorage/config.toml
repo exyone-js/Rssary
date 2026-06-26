@@ -1,1 +1,6 @@
-review_key = "B10gSw4rm_Exy0nE091710"
+# Rssary 站点配置
+
+review_key_hash = "41408809f48a789fcfc165ab8cf719b35afb9a97511db198fbad7cbd9bc49363"
+site_description = "RSS/Feed Aggregator"
+site_language = "zh-CN"
+site_title = "Rssary"

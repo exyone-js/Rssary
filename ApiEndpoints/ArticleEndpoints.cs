@@ -28,7 +28,7 @@ public static class ArticleEndpoints
                 TotalCount = totalCount,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
             });
-        }).CacheOutput("ApiPolicy");
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(15)));
 
         // 搜索文章
         app.MapGet("/api/search", (string q, SiteQueries site, BlogStore blogs) =>
@@ -61,13 +61,29 @@ public static class ArticleEndpoints
                 ArticleCount = stats.ArticleCount,
                 LastUpdated = stats.LastUpdate
             });
-        }).CacheOutput("ApiPolicy");
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)));
 
-        // 健康检查
-        app.MapGet("/api/health", () => Results.Ok(new
+        // ===== 健康检查（含各组件状态） =====
+        app.MapGet("/api/health", (HttpContext context) =>
         {
-            Status = "Healthy",
-            Timestamp = DateTime.UtcNow
-        })).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)));
+            var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+            var storeDir = Path.Combine(env.ContentRootPath, "AppStorage");
+            var configExists = File.Exists(Path.Combine(storeDir, "config.toml"));
+            var blogsExists = File.Exists(Path.Combine(storeDir, "blogs.toml"));
+            var articlesDir = Path.Combine(storeDir, "Articles");
+            var articlesDirExists = Directory.Exists(articlesDir);
+
+            return Results.Ok(new
+            {
+                Status = configExists ? "Healthy" : "Unhealthy",
+                Timestamp = DateTime.UtcNow,
+                Components = new
+                {
+                    Config = configExists ? "ok" : "missing",
+                    Blogs = blogsExists ? "ok" : "empty",
+                    ArticlesDir = articlesDirExists ? "ok" : "not_created"
+                }
+            });
+        }).CacheOutput(policy => policy.Expire(TimeSpan.FromSeconds(30)));
     }
 }
